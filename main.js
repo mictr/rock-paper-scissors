@@ -68,8 +68,38 @@ const makeProperCase = (word) =>
  * Plays Rock, Paper, Scissors. Game ends when the first player reachs 5 points.
  */
 const playGame = () => {
+  const setupChoiceButtonById = (buttonId) => {
+    const buttonChoice = document.querySelector(`#${buttonId}`);
+    buttonChoice.addEventListener("click", (e) => {
+      playRound(buttonId, getComputerChoice());
+    });
+
+    return buttonChoice;
+  };
+
+  const rockButton = setupChoiceButtonById("rock");
+  const paperButton = setupChoiceButtonById("paper");
+  const scissorsButton = setupChoiceButtonById("scissors");
+
+  const result = document.querySelector("#result");
+  const score = document.querySelector("#score");
+
+  const playAgainButton = document.querySelector("#play-again");
+
   let humanScore = 0;
   let computerScore = 0;
+
+  playAgainButton.addEventListener("click", () => {
+    humanScore = 0;
+    computerScore = 0;
+    result.textContent = "";
+    score.textContent = "";
+    [rockButton, paperButton, scissorsButton].forEach((button) => {
+      button.disabled = false;
+    });
+
+    playAgainButton.hidden = true;
+  });
 
   const playRound = (humanSelection, computerSelection) => {
     const winConditions =
@@ -83,29 +113,35 @@ const playGame = () => {
       (computerSelection === "scissors" && humanSelection === "paper");
 
     if (winConditions) {
-      console.log(
-        `You win! ${makeProperCase(humanSelection)} beats ${makeProperCase(
-          computerSelection
-        )}`
-      );
+      result.textContent = `You win! ${makeProperCase(
+        humanSelection
+      )} beats ${makeProperCase(computerSelection)}`;
       humanScore++;
     } else if (loseConditions) {
-      console.log(
-        `You lose! ${makeProperCase(computerSelection)} beats ${makeProperCase(
-          humanSelection
-        )}`
-      );
+      result.textContent = `You lose! ${makeProperCase(
+        computerSelection
+      )} beats ${makeProperCase(humanSelection)}`;
       computerScore++;
     } else {
-      console.log(`Tie! Both selected ${makeProperCase(humanSelection)}`);
+      result.textContent = `Tie! Both selected ${makeProperCase(
+        humanSelection
+      )}`;
+    }
+
+    if (humanScore < 5 && computerScore < 5) {
+      score.textContent = `Current score - Human: ${humanScore}, Computer: ${computerScore}`;
+    } else {
+      [rockButton, paperButton, scissorsButton].forEach((button) => {
+        button.disabled = true;
+      });
+      score.textContent = `Final Score: Human: ${humanScore}, Computer: ${computerScore}`;
+      playAgainButton.hidden = false;
     }
   };
 
-  while (humanScore !== 5 && computerScore !== 5) {
-    playRound(getHumanChoice(), getComputerChoice());
-  }
-
-  console.log(`Final Score: Human: ${humanScore}, Computer: ${computerScore}`);
+  // while (humanScore !== 5 && computerScore !== 5) {
+  //   playRound(getHumanChoice(), getComputerChoice());
+  // }
 };
 
 playGame();
